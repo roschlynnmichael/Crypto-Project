@@ -177,7 +177,7 @@ def protected():
     return 'Logged in as: ' + current_user.email
 
 if __name__ == "__main__":
-    app.run(host = '0.0.0.0', port = 5000, debug=True, ssl_context=('/home/roschlynn/ssl_keys/cert.pem', '/home/roschlynn/ssl_keys/key.pem'))
+    app.run(host = '0.0.0.0', port = 5000, debug=True, ssl_context=('/home/roschlynn/Crypto-Project/ssl_keys/cert.pem', '/home/roschlynn/Crypto-Project/ssl_keys/key.pem'))
 
 #Generate OpenSSL Keys
 #openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365

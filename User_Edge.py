@@ -152,5 +152,5 @@ def home():
     return render_template('user_registration.html')
 
 if __name__ == "__main__":
-    app.run(host = '0.0.0.0', port = 8001, debug = True, ssl_context=('/home/roschlynn/ssl_keys/cert.pem', '/home/roschlynn/ssl_keys/key.pem'))
+    app.run(host = '0.0.0.0', port = 8001, debug = True, ssl_context=('/home/roschlynn/Crypto-Project/ssl_keys/cert.pem', '/home/roschlynn/Crypto-Project/ssl_keys/key.pem'))
 

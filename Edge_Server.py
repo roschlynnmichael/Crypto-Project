@@ -119,4 +119,4 @@ SECRET_KEY_OCR = None
 if __name__ == "__main__":
     with app.test_client() as client:
         client.post('/register_edge')
-    app.run(host='0.0.0.0', port=8000, debug=True, ssl_context=('/home/roschlynn/ssl_keys/cert.pem', '/home/roschlynn/ssl_keys/key.pem'))
+    app.run(host='0.0.0.0', port=8000, debug=True, ssl_context=('/home/roschlynn/Crypto-Project/ssl_keys/cert.pem', '/home/roschlynn/Crypto-Project/ssl_keys/key.pem'))
