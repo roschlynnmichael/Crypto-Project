@@ -6,6 +6,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 from charm.core.engine.util import objectToBytes, bytesToObject
+from threading import Lock
 import requests
 import os
 import hashlib
@@ -13,15 +14,18 @@ import sys
 import pytesseract
 from PIL import Image
 import io
+import json
 import base64
 import datetime
 import traceback
 
 app = Flask(__name__)
+secret_key_lock = Lock()
 
 AIA_URL = "https://localhost:5000/edge_registration"
 EDGE_IDENTITY = "Image to Text Recognition Server"
 SERVICE_ID = "OCR"
+read_key = None
 
 # KPABE Configuration
 group = PairingGroup('SS1024')
@@ -42,10 +46,27 @@ def local_only(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def store_secret_key(serialized_key):
+    try:
+        with open('secret_key_config.json', 'w') as file:
+            json.dump({'serialized_key': serialized_key}, file)
+        print("Stored!")
+    except Exception as e:
+        print(f"Error!: {str(e)}")
+
+def load_key():
+    try:
+        with open('secret_key_config.json', 'r') as file:
+            data = json.load(file)
+            return data['serialized_key']
+    except FileNotFoundError:
+        print("File not found!")
+    except Exception as e:
+        print("Unknown Error!")
+
 @app.route('/register_edge', methods = ['POST'])
 @local_only
 def begin_registration():
-    global SECRET_KEY_OCR #checks
     data = {
             "edge_identity": EDGE_IDENTITY,
             "edge_service_id": SERVICE_ID
@@ -55,7 +76,7 @@ def begin_registration():
         SECRET_KEY_SERIALIZED = response.json().get('secret_key_edge')
         if SECRET_KEY_SERIALIZED is None:
             return jsonify({"error": "Secret key not received from AIA"}), 500
-        SECRET_KEY_OCR = deserialize_secret_key(SECRET_KEY_SERIALIZED)
+        store_secret_key(SECRET_KEY_SERIALIZED)
         return jsonify({"message": "Successfully registered with AIA"}), 200
     else:
         return jsonify({"error": "Failed to register with AIA"}), response.status_code
@@ -68,8 +89,8 @@ def deserialize_ciphertext(serialized_ciphertext):
     except Exception as e:
         raise ValueError(f"Failed to deserialize ciphertext: {str(e)}")
 
-def decrypt_aes_key(ciphertext_c2):
-    plaintext = kpabe.decrypt(ciphertext_c2, SECRET_KEY_OCR)
+def decrypt_aes_key(ciphertext_c2, secret_key):
+    plaintext = kpabe.decrypt(ciphertext_c2, secret_key)
     nonhash_aes_key = objectToBytes(plaintext, group)
     hash_aes_key = hashlib.sha256(nonhash_aes_key).digest()
     return hash_aes_key
@@ -85,23 +106,20 @@ def decrypt_data(ciphertext_c1, key, iv):
 
 @app.route('/decrypt', methods=['POST'])
 def decrypt_and_process():
+    global read_key
+    if read_key is None:
+        read_key = load_key()
+        SECRET_KEY_OCR = deserialize_ciphertext(read_key)
     if SECRET_KEY_OCR is None:
         return jsonify({"Error": "Edge not registered"}), 502
-    #print(SECRET_KEY_SMB)
     data = request.get_json()
     ciphertext_c1 = bytes.fromhex(data['c1'])
-    #print(ciphertext_c1)
     serialized_ciphertext_c2 = data['c2']
-    #print(serialized_ciphertext_c2)
     aes_iv = bytes.fromhex(data['iv'])
-    #print(aes_iv)
     try:
         deserialized_ciphertext_c2 = deserialize_ciphertext(serialized_ciphertext_c2)
-        #print(deserialized_ciphertext_c2)
-        aes_key = decrypt_aes_key(deserialized_ciphertext_c2)
-        #print("Decrypted AES Key:", aes_key)
+        aes_key = decrypt_aes_key(deserialized_ciphertext_c2, SECRET_KEY_OCR)
     except Exception as e:
-        #print("Error during AES key decryption:", str(e))
         return jsonify({'Error': 'Failed to decrypt AES key', 'Details': str(e)}), 501
     try:
         decrypted_image_data = decrypt_data(ciphertext_c1, aes_key, aes_iv)
@@ -115,7 +133,6 @@ def decrypt_and_process():
         print("Error during image decryption or OCR:", str(e))
         return jsonify({'Error': 'Failed during image decryption or OCR', 'Details': str(e)}), 500
 
-SECRET_KEY_OCR = None
 if __name__ == "__main__":
     with app.test_client() as client:
         client.post('/register_edge')
