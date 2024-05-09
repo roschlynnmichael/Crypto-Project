@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#still buggy
+
 echo "Charm Crypto Installation"
 echo "Beginning install of Charm Crypto"
 mkdir packages
