@@ -71,3 +71,5 @@ cd /usr/local/src/charm
 sudo ./configure.sh
 sudo make
 sudo make install
+
+#Script only works on Windows Subsystem for Linux V2
