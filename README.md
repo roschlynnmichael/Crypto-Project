@@ -35,4 +35,5 @@ python3 User_Edge.py
 
 ### Implemented by referring to the following paper
 https://scholar.google.com/citations?view_op=view_citation&hl=en&user=Z1KsnyIAAAAJ&citation_for_view=Z1KsnyIAAAAJ:7PzlFSSx8tAC
+
 Dougherty, S., Tourani, R., Panwar, G., Vishwanathan, R., Misra, S., & Srikanteswara, S. (2021). APECS: A distributed access control framework for pervasive edge computing services. In Proceedings of the 2021 ACM SIGSAC Conference on Computer and Communications Security (pp. 1405-1420).
