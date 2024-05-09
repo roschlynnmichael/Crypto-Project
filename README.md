@@ -1,5 +1,5 @@
 # Key Policy Attribute Based Encryption using Charm Crypto and Python Flask
-Built and Developed by Francina Pali and Roschlynn Michael Dsouza as a semester long class project for the course of CSCI-5930 Applied Cryptography under the guidance of Prof. Reza Tourani.
+Built and Developed by Saint Louis University as a semester long class project for the course of CSCI-5930 Applied Cryptography under the guidance of Prof. Reza Tourani.
 
 ### Installation
 Use the ```install.sh``` script in the Install Script Folder to automatically update, upgrade, download, build and compile the necessary packages required.
@@ -32,6 +32,8 @@ python3 User_Edge.py
 4. Once all the above three steps are done, proceed to the OCR Upload page. The implemented service is image to text using Google's Tesseract OCR.
 5. Output will be given as a downloadable txt file.
 
+#### Known Bug
+Install Script is buggy and fails at installation of GMP (should be fixed in the future).
 
 ### Implemented by referring to the following paper
 https://scholar.google.com/citations?view_op=view_citation&hl=en&user=Z1KsnyIAAAAJ&citation_for_view=Z1KsnyIAAAAJ:7PzlFSSx8tAC
