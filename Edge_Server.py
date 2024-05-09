@@ -1,26 +1,20 @@
-from flask import Flask, render_template, request, jsonify, send_file, abort
-from charm.toolbox.pairinggroup import PairingGroup, GT
+from flask import Flask, request, jsonify, abort
+from charm.toolbox.pairinggroup import PairingGroup, serialize, deserialize
 from charm.toolbox.conversion import *
 from charm.schemes.abenc.abenc_lsw08 import KPabe
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 from charm.core.engine.util import objectToBytes, bytesToObject
-from threading import Lock
 import requests
-import os
 import hashlib
-import sys
 import pytesseract
 from PIL import Image
 import io
 import json
 import base64
-import datetime
-import traceback
 
 app = Flask(__name__)
-secret_key_lock = Lock()
 
 AIA_URL = "https://localhost:5000/edge_registration"
 EDGE_IDENTITY = "Image to Text Recognition Server"

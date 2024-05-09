@@ -1,8 +1,6 @@
-import hashlib
-import re
 import base64
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, abort
-from charm.toolbox.pairinggroup import PairingGroup, GT, serialize, deserialize
+from charm.toolbox.pairinggroup import PairingGroup, serialize, deserialize
 from charm.schemes.abenc.abenc_lsw08 import KPabe
 from charm.core.engine.util import objectToBytes, bytesToObject
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -127,7 +125,6 @@ def register_edge():
                 return jsonify({"secret_key_edge": serialize_secret_key(secret_key_edge)}), 200
             except Exception as e:
                 return jsonify({"error": "Error generating secret key: {}".format(str(e))}), 500
-        
 
 @app.route('/define_policies', methods = ['POST'])
 def self_registration_policy():

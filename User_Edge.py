@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, session
-from charm.toolbox.pairinggroup import PairingGroup, ZR, serialize, deserialize, GT
+from charm.toolbox.pairinggroup import PairingGroup, serialize, deserialize, GT
 from charm.schemes.abenc.abenc_lsw08 import KPabe
 from charm.toolbox.conversion import *
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -10,10 +10,6 @@ import requests
 import os
 import base64
 import hashlib
-import sys
-import configparser
-import json
-import logging
 
 WEB_SERVER_URL = 'https://127.0.0.1:8000/decrypt'
 AIA_URL = 'https://127.0.0.1:5000/user_registration'

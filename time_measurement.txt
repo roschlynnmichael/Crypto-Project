@@ -1,0 +1,9 @@
+Edge Registration took 0.05638819400337525 to complete!
+User Registration took 0.0004578829975798726 seconds to execute!
+
+AES Key Decryption using KPABE took 0.020032717002322897 seconds!
+Decryption of the Image using AES took 0.284212271995784253 seconds!
+Edge took 0.30424498899810715 to finish decryption of the aes key using kpabe, and the ciphertext of the image using aes and generate OCR!
+
+AES Encryption of Image took 0.028336950002994854 seconds!
+KPABE Encryption of AES Key took 0.02092290300060995 seconds!
