@@ -1,2 +1,4 @@
 /packages/
 /packages/*
+config.cfg
+secret_key_config.json
