@@ -11,7 +11,7 @@ import os
 import base64
 import hashlib
 
-WEB_SERVER_URL = 'https://127.0.0.1:8000/decrypt'
+WEB_SERVER_URL = 'http://127.0.0.1:8000/decrypt'
 AIA_URL = 'https://127.0.0.1:5000/user_registration'
 app = Flask(__name__)
 app.config.from_pyfile('config.cfg')
@@ -96,7 +96,7 @@ def upload_and_encrypt():
             'iv': iv.hex(),
             'attributes': session.get('ATTRIBUTES', [])
             }
-            response = requests.post(WEB_SERVER_URL, json = data, verify = False)
+            response = requests.post(WEB_SERVER_URL, json = data)
             data = response.json()
             ocr_result = data['OCR_Result']
             if response.status_code == 200:
@@ -148,5 +148,5 @@ def home():
     return render_template('user_registration.html')
 
 if __name__ == "__main__":
-    app.run(host = '0.0.0.0', port = 8001, debug = True, ssl_context=('/home/roschlynn/Crypto-Project/ssl_keys/cert.pem', '/home/roschlynn/Crypto-Project/ssl_keys/key.pem'))
+    app.run(host = '0.0.0.0', port = 8001, debug = True)
 
