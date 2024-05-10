@@ -111,15 +111,17 @@ def register_edge():
                 return jsonify({"note": "Edge identity and edge service id already registered"}), 200
             else:
                 edges_registered[edge_identity].append(edge_service_id)
-                end_policy_edge = '(PYT or OCR)'
+                enc_policy_edge = '(PYT or OCR)'
+                policies[f"{edge_identity} Policy"] = enc_policy_edge
                 try:
-                    secret_key_edge = generate_secret_key(master_public_key, master_key, end_policy_edge)
+                    secret_key_edge = generate_secret_key(master_public_key, master_key, enc_policy_edge)
                     return jsonify({"secret_key_edge": str(secret_key_edge)}), 200
                 except Exception as e:
                     return jsonify({"error": "Error generating secret key: {}".format(str(e))}), 500
         else:
             edges_registered[edge_identity] = [edge_service_id]
             enc_policy_edge = '(PYT or OCR)'
+            policies[f"{edge_identity} Policy"] = enc_policy_edge
             try:
                 secret_key_edge = generate_secret_key(master_public_key, master_key, enc_policy_edge)
                 return jsonify({"secret_key_edge": serialize_secret_key(secret_key_edge)}), 200
