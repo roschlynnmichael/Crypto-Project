@@ -20,6 +20,7 @@ AIA_URL = "https://localhost:5000/edge_registration"
 EDGE_IDENTITY = "Image to Text Recognition Server"
 SERVICE_ID = "OCR"
 read_key = None
+SECRET_KEY_OCR = None
 
 # KPABE Configuration
 group = PairingGroup('SS1024')
@@ -101,6 +102,7 @@ def decrypt_data(ciphertext_c1, key, iv):
 @app.route('/decrypt', methods=['POST'])
 def decrypt_and_process():
     global read_key
+    global SECRET_KEY_OCR
     if read_key is None:
         read_key = load_key()
         SECRET_KEY_OCR = deserialize_ciphertext(read_key)
