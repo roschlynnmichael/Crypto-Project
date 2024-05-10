@@ -22,8 +22,8 @@ if [ ! -f "openssl-1.0.0s.tar.gz" ]; then
     wget https://www.openssl.org/source/old/1.0.0/openssl-1.0.0s.tar.gz
 fi
 
-if [ ! -f "gmp-5.1.3.tar.bz2" ]; then
-    wget https://gmplib.org/download/gmp/gmp-5.1.3.tar.bz2
+if [ ! -f "gmp-6.3.0.tar.xz" ]; then
+    wget https://gmplib.org/download/gmp/gmp-6.3.0.tar.xz
 fi
 
 if [ ! -f "pbc-0.5.14.tar.gz" ]; then
@@ -32,7 +32,7 @@ fi
 
 # Extract files
 sudo tar -xzvf openssl-1.0.0s.tar.gz -C /usr/local/src
-sudo tar -jxvf gmp-5.1.3.tar.bz2 -C /usr/local/src
+sudo tar -xvf gmp-6.3.0.tar.xz -C /usr/local/src
 sudo tar -zxvf pbc-0.5.14.tar.gz -C /usr/local/src/
 
 # Compile and Install OpenSSL
@@ -53,7 +53,7 @@ openssl version
 sleep 3
 
 # Compile and Install GMP
-cd /usr/local/src/gmp-5.1.3
+cd /usr/local/src/gmp-6.3.0
 sudo ./configure
 sudo make
 sudo make install
@@ -64,12 +64,12 @@ sudo ./configure
 sudo make
 sudo make install
 
-# Compile and Install Charm Crypto
-git clone https://github.com/JHUISI/charm.git
-sudo mv ./charm /usr/local/src
-cd /usr/local/src/charm
-sudo ./configure.sh
-sudo make
-sudo make install
+# Install Python packages
+pip3 install pyparsing==2.4.6
+pip3 install flask
+pip3 install flask_login
 
-# Script only works on Windows Subsystem for Linux V2
+# Perform ldconfig
+sudo ldconfig
+
+echo "All installation steps done successfully!"
