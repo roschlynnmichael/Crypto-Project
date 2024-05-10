@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#Script Timings
+#On a Core I5 12500H and 40GB of Ram, script took around 10 mins to complete
+#On a Core I3 7100-T and 16GB of Ram, script took around 20 mins to complete
+
 # Error handling
 set -e
 
