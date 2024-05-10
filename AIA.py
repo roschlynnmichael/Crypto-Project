@@ -1,4 +1,5 @@
 import base64
+import time
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, abort
 from charm.toolbox.pairinggroup import PairingGroup, serialize, deserialize
 from charm.schemes.abenc.abenc_lsw08 import KPabe
@@ -63,8 +64,11 @@ def generate_secret_key(master_public_key, master_key, policy):
 
 @app.route('/user_registration', methods=['POST'])
 def register_user():
+    start_time = time.perf_counter()
     data = request.get_json()
     if not data or 'email' not in data or 'name' not in data or 'identification' not in data or 'password_hash' not in data or 'service_request' not in data:
+        end_time = time.perf_counter()
+        print(f"User Registration took {end_time - start_time} to fail!")
         return jsonify({"error": "Missing user email or name or identification or password hash or service request"}), 400
     else:
         email = data['email']
@@ -81,6 +85,8 @@ def register_user():
             if service_id_found:
                 if email in users_registered:
                     if service_id_found in users_registered[email].get("attributes", []):
+                        end_time = time.perf_counter()
+                        print(f"User registration took {end_time - start_time} seconds for completion!")
                         return jsonify({"note": "User already has this attribute"}), 200
                     else:
                         existing_services = users_registered[email].get("service_requests", [])
@@ -92,16 +98,25 @@ def register_user():
                 else:
                     users_registered[email] = {"name": name, "service_request": edge_identity_found, "attribute": service_id_found}
                     serialized_master_public_key = serialize_public_key(master_public_key)
+                    end_time = time.perf_counter()
+                    print(f"User registration took {end_time - start_time} seconds for completion!")
                 return jsonify({"user_attribute_generated": service_id_found, "requested_service": edge_identity_found, "master_public_key": serialized_master_public_key}), 200
             else:
+                end_time = time.perf_counter()
+                print(f"User registration took {end_time - start_time} seconds for failure!")
                 return jsonify({"error": "Service request not registered or unavailable"}), 400
         else:
+            end_time = time.perf_counter()
+            print(f"User registration took {end_time - start_time} seconds for failure!")
             abort(401)
 
 @app.route('/edge_registration', methods=['POST'])
 def register_edge():
+    start_time = time.perf_counter()
     data = request.get_json()
     if not data or 'edge_identity' not in data or 'edge_service_id' not in data:
+        end_time = time.perf_counter()
+        print(f"Edge Registration took {end_time - start_time} seconds to fail!")
         return jsonify({"error": "Missing edge identity or edge service id"}), 400
     else:
         edge_identity = data['edge_identity']
@@ -115,6 +130,8 @@ def register_edge():
                 policies[f"{edge_identity} Policy"] = enc_policy_edge
                 try:
                     secret_key_edge = generate_secret_key(master_public_key, master_key, enc_policy_edge)
+                    end_time = time.perf_counter()
+                    print(f"Edge registration took {end_time - start_time} seconds to complete!")
                     return jsonify({"secret_key_edge": str(secret_key_edge)}), 200
                 except Exception as e:
                     return jsonify({"error": "Error generating secret key: {}".format(str(e))}), 500
@@ -124,6 +141,8 @@ def register_edge():
             policies[f"{edge_identity} Policy"] = enc_policy_edge
             try:
                 secret_key_edge = generate_secret_key(master_public_key, master_key, enc_policy_edge)
+                end_time = time.perf_counter()
+                print(f"Edge registration took {end_time - start_time} seconds to complete!")
                 return jsonify({"secret_key_edge": serialize_secret_key(secret_key_edge)}), 200
             except Exception as e:
                 return jsonify({"error": "Error generating secret key: {}".format(str(e))}), 500

@@ -10,6 +10,7 @@ import requests
 import os
 import base64
 import hashlib
+import time
 
 WEB_SERVER_URL = 'http://127.0.0.1:8000/decrypt'
 AIA_URL = 'https://127.0.0.1:5000/user_registration'
@@ -42,6 +43,7 @@ def serialize_ciphertexts(ciphertext):
         raise ValueError(f"Failed to serialize ciphertext: {str(e)}")
 
 def generate_ciphertext_c1(file_path):
+    start_time = time.perf_counter()
     random_key_element = group.random(GT)
     nonhash_aes_key = objectToBytes(random_key_element, group)
     hash_aes_key = hashlib.sha256(nonhash_aes_key).digest()
@@ -61,12 +63,17 @@ def generate_ciphertext_c1(file_path):
     padded_data = padder.finalize()
     ciphertext += encryptor.update(padded_data)
     ciphertext += encryptor.finalize()
+    end_time = time.perf_counter()
+    print(f"AES Encryption of the Image took {end_time - start_time} to complete!")
     return ciphertext, random_key_element, iv
 
 def generate_ciphertext_c2_c3(serialized_public_key, aes_key):
+    start_time = time.perf_counter()
     attributes = session.get('ATTRIBUTES', [])
     deserialized_public_key = deserialize_public_key(serialized_public_key)
     ciphertext_aes_Key = kpabe.encrypt(deserialized_public_key, aes_key, attributes)
+    end_time = time.perf_counter()
+    print(f"KP-ABE Encryption of the AES Key took {end_time - start_time} to complete!")
     return ciphertext_aes_Key
 
 def generate_ciphertexts(file_path, serialized_public_key):

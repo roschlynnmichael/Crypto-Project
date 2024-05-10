@@ -12,6 +12,7 @@ import pytesseract
 from PIL import Image
 import io
 import json
+import time
 import base64
 
 app = Flask(__name__)
@@ -85,18 +86,24 @@ def deserialize_ciphertext(serialized_ciphertext):
         raise ValueError(f"Failed to deserialize ciphertext: {str(e)}")
 
 def decrypt_aes_key(ciphertext_c2, secret_key):
+    start_time = time.perf_counter()
     plaintext = kpabe.decrypt(ciphertext_c2, secret_key)
     nonhash_aes_key = objectToBytes(plaintext, group)
     hash_aes_key = hashlib.sha256(nonhash_aes_key).digest()
+    end_time = time.perf_counter()
+    print(f"KP-ABE Decryption of AES Key {end_time - start_time} seconds to complete!")
     return hash_aes_key
 
 def decrypt_data(ciphertext_c1, key, iv):
+    start_time = time.perf_counter()
     backend = default_backend()
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
     decryptor = cipher.decryptor()
     decrypted_padded_data = decryptor.update(ciphertext_c1) + decryptor.finalize()
     unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
     decrypted_data = unpadder.update(decrypted_padded_data) + unpadder.finalize()
+    end_time = time.perf_counter()
+    print(f"AES Decryption of Image took {end_time - start_time} seconds to complete!")
     return decrypted_data
 
 @app.route('/decrypt', methods=['POST'])
